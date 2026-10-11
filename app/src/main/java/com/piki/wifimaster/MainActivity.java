@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import java.util.Locale;
 
 public class MainActivity extends Activity {
@@ -197,14 +199,31 @@ public class MainActivity extends Activity {
             address = "192.168.1.1";
         }
 
-        Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("http://" + address));
-        try {
-            startActivity(intent);
-        } catch (Exception e) {
-            infoText.setText("Tidak dapat membuka browser. Coba alamat router: "
-                    + address);
-        }
+        final String routerUrl = "http://" + address;
+
+        content.removeAllViews();
+
+        Button backButton = new Button(this);
+        backButton.setText("← KEMBALI KE PIKI WIFI MASTER");
+        backButton.setOnClickListener(v -> {
+            buildScreen();
+            showWifiInfo();
+        });
+        content.addView(backButton);
+
+        TextView addressText = new TextView(this);
+        addressText.setText("Admin router: " + routerUrl);
+        addressText.setTextColor(Color.WHITE);
+        addressText.setPadding(8, 12, 8, 12);
+        content.addView(addressText);
+
+        WebView webView = new WebView(this);
+        webView.setWebViewClient(new WebViewClient());
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.loadUrl(routerUrl);
+        content.addView(webView, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f));
     }
 
     private void showGuide() {
